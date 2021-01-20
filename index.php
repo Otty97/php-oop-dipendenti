@@ -1,90 +1,86 @@
 <?php
 
-class Persona {
-    protected $nome;
-    protected $cognome;
-    protected $codice_fiscale;
-
-
-    public function __construct($nome, $cognome, $codice_fiscale = 'N.D.'){
-        $this->nome = $nome;
-        $this->cognome = $cognome;
-        $this->codice_fiscale = $codice_fiscale;
-    }
-
-    public function to_string(){
-        echo 'Nome: ' . $this->nome . '<br>' . 'Cognome: ' . $this->cognome . '<br>' . 'C.F.: ' . $this->codice_fiscale;
-    }
-
+require_once('dipendenti.php');
+try{
+    $myPersona = new Persona('Pinco',12,'PNCPL1');
+}catch(NomeException $e){
+    echo $e->getMessage();
+    $myPersona = new Persona('Tizo','Tizi','XXXX');
+}catch(CognomeException $e){
+    echo $e->getMessage();
+    $myPersona = new Persona('Caio','Cai','YYYY');
+}catch(CfException $e){
+    echo $e->getMessage();
+    $myPersona = new Persona('Sempronio','Sempro','YXYX');
 }
 
-class Impiegato extends Persona {
-    protected $codice_impiegato;
-    protected $compenso;
+echo $myPersona->to_string();
+var_dump($myPersona);
 
-    public function __construct($nome, $cognome, $codice, $compenso = '0', $codice_fiscale = 'N.D.'){
-        parent::__construct($nome, $cognome, $codice_fiscale);
-        $this->codice_impiegato = $codice;
-        $this->compenso = $compenso;
-    }
+$myImpiegato = new Impiegato([
+    'nome' => 'Pinco',
+    'cognome' => 'Pallino',
+    'codice_fiscale' => 'PNCPL97',
+    'codice_impiegato' => '001',
+    'compenso' => 1000
+]);
+echo $myImpiegato->to_string();
+var_dump($myImpiegato);
 
-    public function calcola_compenso(){
-        echo $this->compenso;
-    }
+$myImpiegatoSalariato = new ImpiegatoSalariato([
+    'nome' => 'Pinco',
+    'cognome' => 'Pallino',
+    'codice_fiscale' => 'PNCPL97',
+    'codice_impiegato' => '001',
+    'giorni_lavorati' => 220,
+    'compenso_giornaliero' => 80
+]);
 
-    public function to_string(){
-        echo 'Nome: ' . $this->nome . '<br>' . 'Cognome: ' . $this->cognome . '<br>' . 'Codice Impiegato: ' . $this->codice_impiegato . '<br>' . 'Compenso: ' . $this->compenso . '<br>' . 'C.F.: ' . $this->codice_fiscale;
-    }
+var_dump($myImpiegatoSalariato);
+echo $myImpiegatoSalariato->calcola_compenso();
 
+$myImpiegatoAOre = new ImpiegatoAOre([
+    'nome' => 'Pinco',
+    'cognome' => 'Pallino',
+    'codice_fiscale' => 'PNCPL97',
+    'codice_impiegato' => '001',
+    'ore_lavorate' => 140,
+    'compenso_orario' => 5
+    ]);
+
+var_dump($myImpiegatoAOre);
+echo $myImpiegatoAOre->calcola_compenso();
+
+
+
+try {
+    $myImpiegatoSuCommissione = new ImpiegatoSuCommissione([
+        'nome' => 'Pinco',
+        'cognome' => 'Pallino',
+        'codice_fiscale' => 'PNCPL97',
+        'codice_impiegato' => '001',
+        'compenso' => 1000,
+    ], 'sito',1000);
+}catch (Exception $e){
+    $myImpiegatoSuCommissione = new Impiegato([
+        'nome' => 'Pinco',
+        'cognome' => 'Pallino',
+        'codice_fiscale' => 'PNCPL97',
+        'codice_impiegato' => '001',
+        'compenso' => 1000,
+    ]
+    );
+    echo $e->getMessage();
 }
 
-class ImpiegatoSalariato extends Impiegato {
-    protected $giorni_lavorati;
-    protected $compenso_giornaliero;
-
-    public function __construct($nome, $cognome, $codice, $giorni_lavorati, $compenso_giornaliero, $compenso = '0', $codice_fiscale = 'N.D.'){
-        parent::__construct($nome, $cognome, $codice, $compenso = '0', $codice_fiscale = 'N.D.');
-        $this->giorni_lavorati = $giorni_lavorati;
-        $this->compenso_giornaliero = $compenso_giornaliero;
-    }
-
-    public function calcola_compenso(){
-        echo $this->giorni_lavorati * $this->compenso_giornaliero;
-    }
+try{
+   $myImpiegatoSuCommissione->fun();
+}catch (Exception $e){
+    echo $e->getMessage();
 }
 
-class ImpiegatoAOre extends Impiegato {
-    protected $ore_lavorate;
-    protected $compenso_orario;
 
-    public function __construct($nome, $cognome, $codice, $ore_lavorate, $compenso_orario, $compenso = '0', $codice_fiscale = 'N.D.'){
-        parent::__construct($nome, $cognome, $codice, $compenso = '0', $codice_fiscale = 'N.D.');
-        $this->ore_lavorate = $ore_lavorate;
-        $this->compenso_orario = $compenso_orario;
-    }
-
-    public function calcola_compenso(){
-        echo $this->ore_lavorate * $this->compenso_orario;
-    }
-}
-
-trait Progetto {
-    protected $nome;
-    protected $commissione;
-}
-
-class ImpiegatoSuCommissione extends Impiegato{
-    use Progetto;
-
-    public function __construct($nome, $cognome, $codice, $commissione, $compenso = '0', $codice_fiscale = 'N.D.'){
-        parent::__construct($nome, $cognome, $codice, $compenso = '0', $codice_fiscale = 'N.D.');
-        $this->commissione = $commissione;
-    }
-
-    public function calcola_compenso(){
-        echo $this->commissione;
-    }
-}
-
+var_dump($myImpiegatoSuCommissione);
+echo $myImpiegatoSuCommissione->calcola_compenso();
 
 ?>
